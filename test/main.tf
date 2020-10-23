@@ -12,7 +12,6 @@ provider "libvirt" {
   alias = "vmhost01"
   uri   = "qemu+ssh://jenkins_automation@vmhost01/system?keyfile=../id_ed25519_jenkins"
   // uri   = "qemu+ssh://vmhost01/system"
-
 }
 
 variable "env" {
@@ -21,7 +20,7 @@ variable "env" {
 
 resource "libvirt_volume" "emby" {
   provider         = libvirt.vmhost01
-  name             = "emby-${var.env}.qcow2"
+  name             = "emby_${var.env}.qcow2"
   pool             = var.env
   base_volume_name = "emby_base.qcow2"
   format           = "qcow2"
@@ -30,7 +29,7 @@ resource "libvirt_volume" "emby" {
 
 resource "libvirt_domain" "emby" {
   provider  = libvirt.vmhost01
-  name      = "emby-${var.env}"
+  name      = "emby_${var.env}"
   memory    = "1024"
   vcpu      = 1
   autostart = true
@@ -39,7 +38,7 @@ resource "libvirt_domain" "emby" {
   network_interface {
     macvtap  = "enp0s25"
     mac      = "52:54:00:EA:17:59"
-    hostname = "emby-${var.env}"
+    hostname = "emby_${var.env}"
   }
 
   network_interface {
