@@ -43,7 +43,7 @@ resource "libvirt_volume" "emby" {
 resource "libvirt_domain" "emby" {
   provider  = libvirt.vmhost01
   name      = "emby-${var.env}"
-  memory    = "1024"
+  memory    = "1180"
   vcpu      = 2
   autostart = true
 
