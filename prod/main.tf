@@ -3,42 +3,55 @@ terraform {
   required_providers {
     libvirt = {
       source  = "dmacvicar/libvirt"
-      version = "0.6.2"
+      version = "~>0.6"
     }
   }
 }
 
 provider "libvirt" {
   alias = "vmhost01"
-  uri   = "qemu+ssh://jenkins_automation@vmhost01/system?keyfile=../id_ed25519_jenkins"
-  // uri   = "qemu+ssh://vmhost01/system"
+  # uri   = "qemu+ssh://jenkins_automation@vmhost01/system?keyfile=../id_ed25519_jenkins"
+  uri   = "qemu+ssh://michnmi@vmhost01/system"
+}
+
+provider "libvirt" {
+  alias = "vmhost02"
+  uri   = "qemu+ssh://jenkins_automation@vmhost02/system?keyfile=../id_ed25519_jenkins"
+  # uri   = "qemu+ssh://vmhost02/system"
+}
+
+provider "libvirt" {
+  alias = "vmhost03"
+  uri   = "qemu+ssh://jenkins_automation@vmhost03/system?keyfile=../id_ed25519_jenkins"
+  # uri   = "qemu+ssh://vmhost03/system"
 }
 
 variable "env" {
   type = string
 }
 
+
 resource "libvirt_volume" "emby" {
-  provider         = libvirt.vmhost01
-  name             = "emby_${var.env}.qcow2"
+  provider         = libvirt.vmhost03
+  name             = "emby-${var.env}.qcow2"
   pool             = var.env
-  base_volume_name = "emby_base.qcow2"
+  base_volume_name = "emby-base.qcow2"
   format           = "qcow2"
   base_volume_pool = var.env
 }
 
 resource "libvirt_domain" "emby" {
-  provider  = libvirt.vmhost01
-  name      = "emby_${var.env}"
-  memory    = "1536"
-  vcpu      = 2
+  provider  = libvirt.vmhost03
+  name      = "emby-${var.env}"
+  memory    = "4096"
+  vcpu      = 4
   autostart = true
 
   // The MAC here is given an IP through mikrotik
   network_interface {
-    macvtap  = "enp0s25"
+    macvtap  = "enp1s0"
     mac      = "52:54:00:EA:18:59"
-    hostname = "emby_${var.env}"
+    hostname = "emby-${var.env}"
   }
 
   network_interface {
