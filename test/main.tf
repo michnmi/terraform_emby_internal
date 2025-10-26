@@ -105,7 +105,7 @@ resource "libvirt_domain" "emby" {
       </xsl:copy>
     </xsl:template>
   </xsl:stylesheet>
-  EOF
+EOF
   }
 
   lifecycle {
