@@ -95,13 +95,11 @@ resource "libvirt_domain" "emby" {
       <xsl:copy>
         <xsl:apply-templates select="@*"/>
         <xsl:apply-templates select="node()"/>
-        <filesystem type='mount' accessmode='passthrough'>
-          <driver type='virtiofs'/>
-          <binary path='/usr/lib/qemu/virtiofsd'/>
-          <source dir='/zpools/data_disk/emby-prod'/>
-          <target dir='emby-data'/>
-          <address type='pci' domain='0x0000' bus='0x00' slot='0x09' function='0x0'/>
-        </filesystem>
+        <disk type="block" device="disk">
+          <driver name="qemu" type="raw" cache="none" io="native"/>
+          <source dev="/dev/zvol/data_disk/emby-prod-volume"/>
+          <target dev="vdb" bus="virtio"/>
+        </disk>
       </xsl:copy>
     </xsl:template>
   </xsl:stylesheet>
@@ -109,7 +107,7 @@ EOF
   }
 
   lifecycle {
-    ignore_changes = [xml, filesystem]
+    ignore_changes = [xml, disk]
   }
 
 }
